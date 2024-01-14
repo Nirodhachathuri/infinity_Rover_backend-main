@@ -75,7 +75,7 @@ export const Register = async (req, res) => {
       } else {
         const lastUserId = (await Users.max("id")) || 0;
 
-        const user_code = `IR_${String(lastUserId + 1).padStart(5, "0")}`;
+        const user_code = `IR${String(lastUserId + 1).padStart(5, "0")}`;
 
         
         try {
