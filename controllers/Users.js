@@ -79,14 +79,14 @@ export const Register = async (req, res) => {
 
         
         try {
-          const otpCode = generateOtp(); //genarate random 6 digit otp
+          // const otpCode = generateOtp(); //genarate random 6 digit otp
 
           //send otp to user phone
-          await sendOtpToPhoneNumber(req.body.mobile, otpCode);
+          // await sendOtpToPhoneNumber(req.body.mobile, otpCode);
 
           //save the otp and expiration
-          const otpExpiration = new Date();
-          otpExpiration.setMinutes(otpExpiration.getMinutes() + 5); // otp expiration on 5 minutes
+          // const otpExpiration = new Date();
+          // otpExpiration.setMinutes(otpExpiration.getMinutes() + 5); // otp expiration on 5 minutes
 
         
           await Users.create({
