@@ -74,7 +74,7 @@ export const BuyPackage = async (req, res) => {
         });
 
         await Users.update({
-            balance: user.balance - current_package.packageValue
+            wallet: user.wallet - current_package.packageValue
         }, {
             where: {
                 id: req.body.userId
