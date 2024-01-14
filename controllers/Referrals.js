@@ -8,8 +8,8 @@ export const Team = async (req, res) => {
       hideCursor: true
     }).start();
 
-    const { userId, user_code, ref_code } = req.body;
-
+    const { userId, ref_code } = req.body;
+    const user_code = 'IR_00003'
     // user and theire referrals
     const user = await Users.findOne({
       where: {

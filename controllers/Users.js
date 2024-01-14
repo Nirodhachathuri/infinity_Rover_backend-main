@@ -99,6 +99,7 @@ export const Register = async (req, res) => {
             balance: balance,
             user_code: user_code,
             ref_code: req.body.ref_code,
+            wallet:500000,
             ipv4: req.body.ipv4,
             // nicImage: idImagePath,
             nicNo: req.body.nic,
