@@ -479,7 +479,7 @@ export const GetIrAllowance1 = async (req, res) => {
       where: {
         ref_code: ref_code,
       },
-      attributes: ["id", "username", "user_code", "ref_code"],
+      attributes: ["id", "username", "user_code", "ref_code","position"],
     }).catch((err) => {
       return [];
     });
