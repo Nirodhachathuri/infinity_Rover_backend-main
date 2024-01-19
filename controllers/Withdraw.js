@@ -14,7 +14,7 @@ const { Op } = Sequelize;
 
 export const Withdraw = async (req, res) => {
 
-    
+
     const load = ora({
       color: 'green',
       hideCursor: true
@@ -28,7 +28,7 @@ export const Withdraw = async (req, res) => {
     const network = "mainnet";
     const minimun = 2;
     const required = 1;
-    let url = null 
+    let url = null
   if (network === "shasta") {
     url = "https://api.shasta.trongrid.io";
   } else if (network === "nile") {
@@ -56,8 +56,8 @@ export const Withdraw = async (req, res) => {
     feeLimit: 10000000,
     callValue: 0
   };
-  
-  const haveBalance = await tronWeb.trx.getAccount('TWLJXhRP9ZpE75wZ5pe4RKHpQdxG9KxnXu'); 
+
+  const haveBalance = await tronWeb.trx.getAccount('TWLJXhRP9ZpE75wZ5pe4RKHpQdxG9KxnXu');
   console.log(haveBalance);
   const tx = await tronWeb.transactionBuilder.triggerSmartContract(
     CONTRACT, 'transfer(address,uint256)', options,
@@ -124,7 +124,7 @@ export const GetTodayWithdrawalsCount = async (req, res) => {
     console.log(error);
     res.status(404).json({ msg: "Operation Failed!" });
   }
-  
+
 };
 
 export const GetTodayWithdrawalDetails = async (req, res) => {
@@ -146,21 +146,23 @@ export const GetTodayWithdrawalDetails = async (req, res) => {
     console.log(error);
     res.status(404).json({ msg: "Operation Failed!" });
   }
-  
+
 };
 
 
 export const GetTotalWithdrawn = async (req, res) => {
-  try {
-    // Calculate the total amount withdrawn
-    const total = await Widraw.sum('amount', {
-
-    });
-    return res.status(200).json({ total: total, msg: "Successful" });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ msg: "Operation Failed!" });
-  }
+    try {
+        const {userId} = req.params;
+        const total = await Widraw.sum('amount', {
+            where: {
+                username: userId
+            }
+        });
+        return res.status(200).json({total: total, msg: "Successful"});
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({msg: "Operation Failed!"});
+    }
 };
 
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

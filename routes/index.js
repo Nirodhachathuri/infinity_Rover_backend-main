@@ -1,6 +1,11 @@
 import express from "express";
 import { upload, Register, Login, Logout, SetPosition, GetIntroducerSet, GetNewCommerSet, GetIrAllowance,updateWallet, ApproveKYCForUser, GetNewRegistrations, GetBannedUsers,GetIrFamily ,GetAllUsers,GetIrAllowance1} from "../controllers/Users.js";
-import { GetTodayWithdrawalDetails, GetTodayWithdrawalsCount, Withdraw } from "../controllers/Withdraw.js";
+import {
+  GetTodayWithdrawalDetails,
+  GetTodayWithdrawalsCount,
+  GetTotalWithdrawn,
+  Withdraw
+} from "../controllers/Withdraw.js";
 import { GetTodayDepositDetails, GetTodayDepositsCount, Recharge } from "../controllers/Recharge.js";
 import {
   WithdrawalsHistory,
@@ -56,7 +61,8 @@ router.put('/updateWallet', updateWallet); // should be provide ref_code of loge
 router.put('/kyc/approve', ApproveKYCForUser); // should be provide userId and approved data  as on bodydata
 router.get('/withdraw/todaycount', GetTodayWithdrawalsCount); 
 router.get('/withdraw/todaydetails', GetTodayWithdrawalDetails); 
-router.get('/recharge/todaycount', GetTodayDepositsCount); 
+router.get('/withdraw/total/:userId', GetTotalWithdrawn);
+router.get('/recharge/todaycount', GetTodayDepositsCount);
 router.get('/recharge/todaydetails', GetTodayDepositDetails); 
 router.get('/users/newregistrations', GetNewRegistrations); 
 router.get('/users/bannedusers', GetBannedUsers); 
