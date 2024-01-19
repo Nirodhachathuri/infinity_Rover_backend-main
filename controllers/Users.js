@@ -485,6 +485,7 @@ export const GetIrFamily = async (req, res) => {
       "last_name",
       "createdAt",
       "ref_code",
+      "user_code",
       "position",
     ],
   })
