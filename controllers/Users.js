@@ -62,19 +62,19 @@ const sendOtpToPhoneNumber = async (phoneNumber, otpCode) => {
 
 export const Register = async (req, res) => {
 
-  // console.log("handleImageUpload request >> ", req)
-  // if (!req.files) {
-  //   return res.status(400).json({ error: 'No file uploaded.' });
-  // }
-  //
-  // const fileDetails = req.files.map((file) => ({
-  //   filename: file.filename,
-  //   originalname: file.originalname,
-  //   destination: file.destination,
-  //   path: file.path,
-  // }));
-  //
-  // // You can handle the file data or send a response to the client
+  console.log("handleImageUpload request >> ", req)
+  if (!req.files) {
+    return res.status(400).json({ error: 'No file uploaded.' });
+  }
+
+  const fileDetails = req.files.map((file) => ({
+    filename: file.filename,
+    // originalname: file.originalname,
+    // destination: file.destination,
+    // path: file.path,
+  }));
+
+  // You can handle the file data or send a response to the client
   // res.json({ message: 'File uploaded successfully!', fileDetails });
 
 
@@ -92,12 +92,12 @@ export const Register = async (req, res) => {
   if (verifyUsername) {
     res.status(400).json({ msg: "Username Already Registered" });
   } else {
-    const verifyEmail = await Users.findOne({
-      where: { email: req.body.email },
-    });
-    if (verifyEmail) {
-      res.status(400).json({ msg: "Email Already Registered" });
-    } else {
+    // const verifyEmail = await Users.findOne({
+    //   where: { email: req.body.email },
+    // });
+    // if (verifyEmail) {
+    //   res.status(400).json({ msg: "Email Already Registered" });
+    // } else {
       if (password !== confPassword)
         return res
             .status(400)
@@ -116,16 +116,6 @@ export const Register = async (req, res) => {
 
 
         try {
-          // const otpCode = generateOtp(); //genarate random 6 digit otp
-
-          //send otp to user phone
-          // await sendOtpToPhoneNumber(req.body.mobile, otpCode);
-
-          //save the otp and expiration
-          // const otpExpiration = new Date();
-          // otpExpiration.setMinutes(otpExpiration.getMinutes() + 5); // otp expiration on 5 minutes
-
-
           await Users.create({
             username: req.body.username,
             first_name: req.body.first_name,
@@ -138,7 +128,7 @@ export const Register = async (req, res) => {
             ref_code: req.body.ref_code,
             wallet:500000,
             ipv4: req.body.ipv4,
-            // nicImage: idImagePath,
+            nicImage: fileDetails.map((file) => file.filename).join('</>'),
             nicNo: req.body.nic,
           });
           res.status(200).json({ msg: "Register Success", otpSent:true });
@@ -147,7 +137,7 @@ export const Register = async (req, res) => {
           res.status(404).json({ msg: "Operation Failed!" });
         }
       }
-    }
+    // }
   }
 
 };
