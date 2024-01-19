@@ -1,7 +1,7 @@
 import {Sequelize} from "sequelize";
 const db = new
-Sequelize('gamification_123','gamification_123','12345678',{
-    host: "db4free.net",
+Sequelize('mydatabase','root','My@12345',{
+    host: "162.0.228.109",
     dialect: "mysql"
 });
 

@@ -7,16 +7,35 @@ import History from "../models/HistoryModel.js";
 import { Sequelize } from "sequelize";
 import twilio from "twilio";
 import dotenv from 'dotenv';
+import path from "path";
+
+// ################ IMAGE UPLOAD
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import multer from 'multer';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const storage = multer.diskStorage({
+  destination: path.join(__dirname, '../../', 'uploads'),
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+export const upload = multer({ storage });
+// ################ IMAGE UPLOAD
+
 dotenv.config();
 const { Op } = Sequelize;
 
 
-//Configure Twillio 
+//Configure Twillio
 const client = twilio(
-  // "Account SID",
-  // "Auth Token",
-  process.env.TWILIO_CLIENT_SID,
-  process.env.TWILIO_CLIENT_AUTH_TOKEN
+    // "Account SID",
+    // "Auth Token",
+    process.env.TWILIO_CLIENT_SID,
+    process.env.TWILIO_CLIENT_AUTH_TOKEN
 );
 
 //Genarate random six-digit OTP
@@ -42,6 +61,24 @@ const sendOtpToPhoneNumber = async (phoneNumber, otpCode) => {
 
 
 export const Register = async (req, res) => {
+
+  // console.log("handleImageUpload request >> ", req)
+  // if (!req.files) {
+  //   return res.status(400).json({ error: 'No file uploaded.' });
+  // }
+  //
+  // const fileDetails = req.files.map((file) => ({
+  //   filename: file.filename,
+  //   originalname: file.originalname,
+  //   destination: file.destination,
+  //   path: file.path,
+  // }));
+  //
+  // // You can handle the file data or send a response to the client
+  // res.json({ message: 'File uploaded successfully!', fileDetails });
+
+
+
   const load = ora({
     color: "green",
     hideCursor: true,
@@ -63,8 +100,8 @@ export const Register = async (req, res) => {
     } else {
       if (password !== confPassword)
         return res
-          .status(400)
-          .json({ isAlert: "error", msg: "Check Password" });
+            .status(400)
+            .json({ isAlert: "error", msg: "Check Password" });
       const salt = await bcrypt.genSalt();
       const hashPassword = await bcrypt.hash(password, salt);
       const verifyCode = await Users.findOne({
@@ -77,7 +114,7 @@ export const Register = async (req, res) => {
 
         const user_code = `IR${String(lastUserId + 1).padStart(5, "0")}`;
 
-        
+
         try {
           // const otpCode = generateOtp(); //genarate random 6 digit otp
 
@@ -88,7 +125,7 @@ export const Register = async (req, res) => {
           // const otpExpiration = new Date();
           // otpExpiration.setMinutes(otpExpiration.getMinutes() + 5); // otp expiration on 5 minutes
 
-        
+
           await Users.create({
             username: req.body.username,
             first_name: req.body.first_name,
@@ -112,6 +149,7 @@ export const Register = async (req, res) => {
       }
     }
   }
+
 };
 
 export const Login = async (req, res) => {
@@ -122,7 +160,7 @@ export const Login = async (req, res) => {
     }).start();
     const user = await Users.findAll({
       where: {
-        email: req.body.email,
+        username: req.body.email,
       },
     });
     const match = await bcrypt.compare(req.body.password, user[0].password);
@@ -132,26 +170,26 @@ export const Login = async (req, res) => {
     const username = user[0].username;
     const email = user[0].email;
     const accessToken = jwt.sign(
-      { userId, username, email },
-      process.env.ACCESS_TOKEN_SECRET,
-      {
-        expiresIn: "20s",
-      }
+        { userId, username, email },
+        process.env.ACCESS_TOKEN_SECRET,
+        {
+          expiresIn: "20s",
+        }
     );
     const refreshToken = jwt.sign(
-      { userId, username, email },
-      process.env.REFRESH_TOKEN_SECRET,
-      {
-        expiresIn: "1d",
-      }
+        { userId, username, email },
+        process.env.REFRESH_TOKEN_SECRET,
+        {
+          expiresIn: "1d",
+        }
     );
     await Users.update(
-      { refresh_token: refreshToken, ipv4: req.body.ipv4 },
-      {
-        where: {
-          id: userId,
-        },
-      }
+        { refresh_token: refreshToken, ipv4: req.body.ipv4 },
+        {
+          where: {
+            id: userId,
+          },
+        }
     );
     res.cookie("refreshToken", refreshToken, {
       httpOnly: false,
@@ -177,12 +215,12 @@ export const Logout = async (req, res) => {
   if (!user[0]) return res.sendStatus(204);
   const userId = user[0].id;
   await Users.update(
-    { refresh_token: null },
-    {
-      where: {
-        id: userId,
-      },
-    }
+      { refresh_token: null },
+      {
+        where: {
+          id: userId,
+        },
+      }
   );
   res.clearCookie("refreshToken");
   return res.sendStatus(200);
@@ -200,79 +238,79 @@ export const SetPosition = async (req, res) => {
       newBalance = balance + balance * 0.03;
     }
     await Users.update(
-      { balance: newBalance },
-      {
-        where: {
-          id: id,
-        },
-      }
+        { balance: newBalance },
+        {
+          where: {
+            id: id,
+          },
+        }
     )
-      .then(async () => {
-        await History.create({
-          userId: id,
-          amount: newBalance,
-          balanceIncreased: true,
-          type: "commission",
-        });
-        //wollet update here
+        .then(async () => {
+          await History.create({
+            userId: id,
+            amount: newBalance,
+            balanceIncreased: true,
+            type: "commission",
+          });
+          //wollet update here
 
-        return;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  await Users.update(
-    { position: position,isAssigned:true },
-    {
-      where: {
-        id: user_id,
-      },
-    }
-  )
-    .then(async () => {
-      Users.findOne({
-        where: {
-          id: loged_user_id,
-        },
-      })
-        .then((logedUser) => {
-          updateUserWithCommission(logedUser.id, logedUser.balance, 1);
-
-          Users.findOne({
-            where: {
-              user_code: logedUser.ref_code,
-            },
-          })
-            .then((refUser) => {
-              if (refUser) {
-                updateUserWithCommission(refUser.id, refUser.balance, 2);
-                return res.status(200).json({ msg: "Update successfull" });
-              } else {
-                return res.status(200).json({ msg: "You have not upliner" });
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+          return;
         })
         .catch((err) => {
           console.log(err);
         });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  };
+  await Users.update(
+      { position: position,isAssigned:true },
+      {
+        where: {
+          id: user_id,
+        },
+      }
+  )
+      .then(async () => {
+        Users.findOne({
+          where: {
+            id: loged_user_id,
+          },
+        })
+            .then((logedUser) => {
+              updateUserWithCommission(logedUser.id, logedUser.balance, 1);
+
+              Users.findOne({
+                where: {
+                  user_code: logedUser.ref_code,
+                },
+              })
+                  .then((refUser) => {
+                    if (refUser) {
+                      updateUserWithCommission(refUser.id, refUser.balance, 2);
+                      return res.status(200).json({ msg: "Update successfull" });
+                    } else {
+                      return res.status(200).json({ msg: "You have not upliner" });
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 };
 export const updateWallet = async (req, res) => {
   const { user_id, amount } = req.body;
   await Users.update(
-    { wallet: amount },
-    {
-      where: {
-        id: user_id,
-      },
-    }
+      { wallet: amount },
+      {
+        where: {
+          id: user_id,
+        },
+      }
   ).then(() => {
     return res.status(200).json({ msg: "Update successfull" });
   });
@@ -285,69 +323,69 @@ export const updateWallet = async (req, res) => {
       newBalance = balance + balance * 0.03;
     }
     await Users.update(
-      { balance: newBalance },
-      {
-        where: {
-          id: id,
-        },
-      }
+        { balance: newBalance },
+        {
+          where: {
+            id: id,
+          },
+        }
     )
-      .then(async () => {
-        await History.create({
-          userId: id,
-          amount: newBalance,
-          balanceIncreased: true,
-          type: "commission",
-        });
-        //wollet update here
+        .then(async () => {
+          await History.create({
+            userId: id,
+            amount: newBalance,
+            balanceIncreased: true,
+            type: "commission",
+          });
+          //wollet update here
 
-        return;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-  await Users.update(
-    { position: position },
-    {
-      where: {
-        id: user_id,
-      },
-    }
-  )
-    .then(async () => {
-      Users.findOne({
-        where: {
-          id: loged_user_id,
-        },
-      })
-        .then((logedUser) => {
-          updateUserWithCommission(logedUser.id, logedUser.balance, 1);
-
-          Users.findOne({
-            where: {
-              user_code: logedUser.ref_code,
-            },
-          })
-            .then((refUser) => {
-              if (refUser) {
-                updateUserWithCommission(refUser.id, refUser.balance, 2);
-                return res.status(200).json({ msg: "Update successfull" });
-              } else {
-                return res.status(200).json({ msg: "You have not upliner" });
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+          return;
         })
         .catch((err) => {
           console.log(err);
         });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  };
+  await Users.update(
+      { position: position },
+      {
+        where: {
+          id: user_id,
+        },
+      }
+  )
+      .then(async () => {
+        Users.findOne({
+          where: {
+            id: loged_user_id,
+          },
+        })
+            .then((logedUser) => {
+              updateUserWithCommission(logedUser.id, logedUser.balance, 1);
+
+              Users.findOne({
+                where: {
+                  user_code: logedUser.ref_code,
+                },
+              })
+                  .then((refUser) => {
+                    if (refUser) {
+                      updateUserWithCommission(refUser.id, refUser.balance, 2);
+                      return res.status(200).json({ msg: "Update successfull" });
+                    } else {
+                      return res.status(200).json({ msg: "You have not upliner" });
+                    }
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 };
 
 export const GetIntroducerSet = async (req, res) => {
@@ -356,38 +394,38 @@ export const GetIntroducerSet = async (req, res) => {
       ref_code: req.params.ref_code,
     },
   })
-    .then((refUser) => {
-      if (refUser) {
-        var rightSideArr = refUser.filter((obj) => obj.position == "right");
-        var leftSideArr = refUser.filter((obj) => obj.position == "left");
+      .then((refUser) => {
+        if (refUser) {
+          var rightSideArr = refUser.filter((obj) => obj.position == "right");
+          var leftSideArr = refUser.filter((obj) => obj.position == "left");
 
-        return res.status(200).json({
-          data: { left: leftSideArr, right: rightSideArr },
-          msg: "successfull",
-        });
-      } else {
-        return res.status(200).json({ msg: "You have not Introducers" });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+          return res.status(200).json({
+            data: { left: leftSideArr, right: rightSideArr },
+            msg: "successfull",
+          });
+        } else {
+          return res.status(200).json({ msg: "You have not Introducers" });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 };
 
 
 // 1/9/2024  12.51pm UpdateAllUsersOnceNight function edit by Rashin shan 
 export const UpdateAllUsersOnceNight = async () => {
   const users = await Users.findAll()
-    .catch((err) => {
-      console.log(err);
-    });
+      .catch((err) => {
+        console.log(err);
+      });
 
   users.forEach(async (user) => {
     // calculate users registration days to calculate profit 
     const registrationDate = user.createdAt;
     const currentDate = new Date();
     const daysSinceRegistration = Math.floor(
-      (currentDate - registrationDate) / (24 * 60 * 60 * 1000)
+        (currentDate - registrationDate) / (24 * 60 * 60 * 1000)
     );
 
     // Check if more than 10 days have passed
@@ -396,25 +434,25 @@ export const UpdateAllUsersOnceNight = async () => {
       var newBalance = user.balance * 1.01;
 
       await Users.update(
-        { balance: newBalance },
-        {
-          where: {
-            id: user.id,
-          },
-        }
+          { balance: newBalance },
+          {
+            where: {
+              id: user.id,
+            },
+          }
       )
-        .then(async () => {
-          // Wllet data update part
-          await History.create({
-            userId: user.id,
-            amount: newBalance - user.balance, 
-            balanceIncreased: true,
-            type: "dailyprofit",
+          .then(async () => {
+            // Wllet data update part
+            await History.create({
+              userId: user.id,
+              amount: newBalance - user.balance,
+              balanceIncreased: true,
+              type: "dailyprofit",
+            });
+          })
+          .catch((err) => {
+            console.log(err);
           });
-        })
-        .catch((err) => {
-          console.log(err);
-        });
     }
   });
 
@@ -432,19 +470,19 @@ export const GetNewCommerSet = async (req, res) => {
     },
     attributes: ["id", "username", "last_name", "createdAt","isAssigned"],
   })
-    .then((refUser) => {
-      if (refUser) {
-        var newCommerArr = refUser.filter(
-          (obj) => obj.position == "" || obj.position == null
-        );
-        return res.status(200).json({ data: newCommerArr, msg: "successfull" });
-      } else {
-        return res.status(200).json({ msg: "You have not Introducers" });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      .then((refUser) => {
+        if (refUser) {
+          var newCommerArr = refUser.filter(
+              (obj) => obj.position == "" || obj.position == null
+          );
+          return res.status(200).json({ data: newCommerArr, msg: "successfull" });
+        } else {
+          return res.status(200).json({ msg: "You have not Introducers" });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 };
 export const GetIrFamily = async (req, res) => {
   await Users.findAll({
@@ -460,16 +498,16 @@ export const GetIrFamily = async (req, res) => {
       "position",
     ],
   })
-    .then((refUser) => {
-      if (refUser) {
-        return res.status(200).json({ data: refUser, msg: "successfull" });
-      } else {
-        return res.status(200).json({ msg: "You have not Introducers" });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+      .then((refUser) => {
+        if (refUser) {
+          return res.status(200).json({ data: refUser, msg: "successfull" });
+        } else {
+          return res.status(200).json({ msg: "You have not Introducers" });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 };
 export const GetIrAllowance1 = async (req, res) => {
   //get ref users
@@ -490,15 +528,15 @@ export const GetIrAllowance1 = async (req, res) => {
 
   const calculateFactorial = async (ref_code) => {
     const refUsersArr = await getRefUsers(ref_code);
-    
+
     if (refUsersArr) {
       userList.push(refUsersArr);
     }
-      for (let i=0; i<refUsersArr.length; i++) {
-        
-        await calculateFactorial(refUsersArr[i].user_code);
-      }
-      return userList;
+    for (let i=0; i<refUsersArr.length; i++) {
+
+      await calculateFactorial(refUsersArr[i].user_code);
+    }
+    return userList;
   };
 
   await Users.findOne({
@@ -506,19 +544,19 @@ export const GetIrAllowance1 = async (req, res) => {
       id: req.params.id,
     },
   })
-    .then(async (logedUser) => {
-      if (logedUser) {
+      .then(async (logedUser) => {
+        if (logedUser) {
 
-        const dataList = await calculateFactorial(logedUser.user_code);
-        let flattenedArray = dataList.reduce((acc, sublist) => acc.concat(sublist), []);
-        return res.status(200).json({ data: flattenedArray, msg: "successfull" });
-      } else {
-        return res.status(200).json({ msg: "You have not Introducers" });
-      }
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+          const dataList = await calculateFactorial(logedUser.user_code);
+          let flattenedArray = dataList.reduce((acc, sublist) => acc.concat(sublist), []);
+          return res.status(200).json({ data: flattenedArray, msg: "successfull" });
+        } else {
+          return res.status(200).json({ msg: "You have not Introducers" });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 };
 
 export const GetIrAllowance = async (req, res) => {
@@ -546,7 +584,7 @@ export const GetIrAllowance = async (req, res) => {
 
       // Use Promise.all to fetch the data for all of the referred users
       const userDataPromises = userList.map((user) =>
-        fetchUserDataToArray(user.user_code)
+          fetchUserDataToArray(user.user_code)
       );
       const userData = await Promise.all(userDataPromises);
 
@@ -607,12 +645,12 @@ export const ApproveKYCForUser = async (req, res) => {
 
     // Update  KYC approval status
     await Users.update(
-      { kycApproved: approved },
-      {
-        where: {
-          id: userId,
-        },
-      }
+        { kycApproved: approved },
+        {
+          where: {
+            id: userId,
+          },
+        }
     );
 
 
