@@ -1,5 +1,5 @@
 import express from "express";
-import { Register, Login, Logout, SetPosition, GetIntroducerSet, GetNewCommerSet, GetIrAllowance,updateWallet, ApproveKYCForUser, GetNewRegistrations, GetBannedUsers,GetIrFamily ,GetAllUsers,GetIrAllowance1} from "../controllers/Users.js";
+import { upload, Register, Login, Logout, SetPosition, GetIntroducerSet, GetNewCommerSet, GetIrAllowance,updateWallet, ApproveKYCForUser, GetNewRegistrations, GetBannedUsers,GetIrFamily ,GetAllUsers,GetIrAllowance1} from "../controllers/Users.js";
 import { GetTodayWithdrawalDetails, GetTodayWithdrawalsCount, Withdraw } from "../controllers/Withdraw.js";
 import { GetTodayDepositDetails, GetTodayDepositsCount, Recharge } from "../controllers/Recharge.js";
 import {
@@ -21,7 +21,6 @@ import {
   GetPackagesByUser,
 } from "../controllers/Package.js";
 import { ChangeStatus, GetAdminControls, GetControls, UpdateAdminControls } from "../controllers/ControlPanel.js";
-import { upload } from "../middleware/imageUpload.js";
 
 const router = express.Router();
 
@@ -31,7 +30,7 @@ router.post('/levelOne', levelOne);
 router.post('/levelTwo', levelTwo);
 router.post('/levelPremium', levelPremium);
 router.post('/address', SetAddress);
-router.post('/register',upload.single("idImage"), Register);
+router.post('/register',upload.array("images", 5), Register);
 router.post('/login', Login);
 router.post('/withdraw', Withdraw);
 router.post('/recharge', Recharge);
