@@ -149,4 +149,18 @@ export const GetTodayWithdrawalDetails = async (req, res) => {
   
 };
 
+
+export const GetTotalWithdrawn = async (req, res) => {
+  try {
+    // Calculate the total amount withdrawn
+    const total = await Widraw.sum('amount', {
+
+    });
+    return res.status(200).json({ total: total, msg: "Successful" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ msg: "Operation Failed!" });
+  }
+};
+
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
