@@ -29,7 +29,7 @@ try {
   process.exit(1); // Exit the process if there is a critical error
 }
 
-app.use(cors({ credentials: true, origin: ["http://localhost:3000","https://ar-app-515b9.web.app","https://black-font.onrender.com","https://b9c2-112-135-192-77.ngrok-free.app","http://165.227.106.195" ]}));
+app.use(cors({ credentials: true, origin: ["http://localhost:3000","https://ar-app-515b9.web.app","https://black-font.onrender.com","https://www.infinityrover.net","http://165.227.106.195" ]}));
 app.use(cookieParser());
 app.use(express.json());
 app.use(router);
