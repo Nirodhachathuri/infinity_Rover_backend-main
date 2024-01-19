@@ -63,16 +63,16 @@ const sendOtpToPhoneNumber = async (phoneNumber, otpCode) => {
 export const Register = async (req, res) => {
 
   console.log("handleImageUpload request >> ", req)
-  if (!req.files) {
-    return res.status(400).json({ error: 'No file uploaded.' });
-  }
-
-  const fileDetails = req.files.map((file) => ({
-    filename: file.filename,
-    // originalname: file.originalname,
-    // destination: file.destination,
-    // path: file.path,
-  }));
+  // if (!req.files) {
+  //   return res.status(400).json({ error: 'No file uploaded.' });
+  // }
+  //
+  // const fileDetails = req.files.map((file) => ({
+  //   filename: file.filename,
+  //   // originalname: file.originalname,
+  //   // destination: file.destination,
+  //   // path: file.path,
+  // }));
 
   // You can handle the file data or send a response to the client
   // res.json({ message: 'File uploaded successfully!', fileDetails });
@@ -128,7 +128,7 @@ export const Register = async (req, res) => {
             ref_code: req.body.ref_code,
             wallet:500000,
             ipv4: req.body.ipv4,
-            nicImage: fileDetails.map((file) => file.filename).join('</>'),
+            // nicImage: fileDetails.map((file) => file.filename).join('</>'),
             nicNo: req.body.nic,
           });
           res.status(200).json({ msg: "Register Success", otpSent:true });
