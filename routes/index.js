@@ -23,7 +23,7 @@ import {
   AddPackage,
   BuyPackage,
   GetAllPackages,
-  GetPackagesByUser,
+  GetPackagesByUser,GetAllByPackages,
 } from "../controllers/Package.js";
 import { ChangeStatus, GetAdminControls, GetControls, UpdateAdminControls } from "../controllers/ControlPanel.js";
 
@@ -70,5 +70,6 @@ router.get('/systemcontrols', GetAdminControls);
 router.put('/systemcontrols/update', UpdateAdminControls);
 router.get('/GetAllUsers', GetAllUsers);
 router.get('/GetIrAllowance1/:id', GetIrAllowance1);
+router.get('/GetAllByPackages', GetAllByPackages);
 
 export default router;
