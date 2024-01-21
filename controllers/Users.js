@@ -581,25 +581,60 @@ const createNestedArray = (mainArray, dataArray, parentId) => {
       const children = createNestedArray(mainArray, dataArray, dataItem.user_code);
       if (children && children.length > 0) {
         newItem.children = [];
-        
-        for (let i = 0; i < Math.min(children.length, 2); i++) {
-          newItem.children.push(children[i]);
+
+        const leftChildren = [];
+        const rightChildren = [];
+
+        for (let i = 0; i < children.length; i++) {
+          const child = children[i];
+          if (child.position === 'left' && leftChildren.length < 2) {
+            leftChildren.push(child);
+          } else if (child.position === 'right' && rightChildren.length < 2) {
+            rightChildren.push(child);
+          } 
         }
 
-        if (children.length > 2) {
+        if (leftChildren.length > 0) {
           newItem.children.push({
-            children: children.slice(2), // Add the remaining children to a new nested children array
+            position: 'left',
+            children: leftChildren,
+          });
+        }
+
+        if (rightChildren.length > 0) {
+          newItem.children.push({
+            position: 'right',
+            children: rightChildren,
           });
         }
       }
 
-      result.push(newItem); 
+      result.push(newItem);
     }
   }
-
   return result;
 };
+// function printTree(node,level=0){
+//   if (!node) {
+//     return [];  // Return an empty array when the node is undefined
+//   }
+// console.log("node",node)
+//   const result = [{
+//     id: node.id,
+//     username: node.username,
+//     userCode: node.userCode,
+//     refCode: node.refCode,
+//     label: node.label,
+//     position: node.position,
+//     children: printTree(node.children[0], level + 1),
+//   }];
 
+//   if (node.children.length > 1) {
+//     result[0].children.push(...printTree(node.children[1], level + 1));
+//   }
+
+//   return result;
+// }
 
 export const GetIrAllowance = async (req, res) => {
   let logedUserCode = req.params.user_code;
