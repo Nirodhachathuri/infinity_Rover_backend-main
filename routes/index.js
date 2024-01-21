@@ -20,13 +20,13 @@ import {
 import {
   GetTodayWithdrawalDetails,
   GetTodayWithdrawalsCount,
-  GetTotalWithdrawn,
+  GetTotalWithdrawn,GetAllWithdrawal,
   Withdraw,CreateWithdraw
 } from "../controllers/Withdraw.js";
 import {
   GetTodayDepositDetails,
   GetTodayDepositsCount,
-  Recharge,
+  Recharge,GetDepositDetails
 } from "../controllers/Recharge.js";
 import {
   WithdrawalsHistory,
@@ -103,5 +103,7 @@ router.get("/GetIrAllowance1/:id", GetIrAllowance1);
 router.get("/GetAllByPackages", GetAllByPackages);
 router.post("/CreateWithdraw",CreateWithdraw);
 router.post("/CreateRecharge",CreateRecharge);
+router.get("/GetDepositDetails",GetDepositDetails);
+router.get("/GetAllWithdrawal",GetAllWithdrawal);
 
 export default router;

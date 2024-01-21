@@ -101,7 +101,7 @@ export const CreateRecharge = async (req, res) => {
     await Rechge.create({
       username: req.body.username,
       amount: req.body.amount,
-      status: 'Pending',
+      status: "Pending",
       // Assuming you store the file path in the database
       // imagePath: req.file.path,
     });
@@ -149,5 +149,13 @@ export const GetTodayDepositDetails = async (req, res) => {
     res.status(404).json({ msg: "Operation Failed!" });
   }
 };
-
+export const GetDepositDetails = async (req, res) => {
+  try {
+    const deposits = await Rechge.findAll({});
+    return res.status(200).json({ deposits: deposits, msg: "successfull" });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ msg: "Operation Failed!" });
+  }
+};
 // ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
