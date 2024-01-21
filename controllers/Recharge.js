@@ -98,7 +98,7 @@ export const Recharge = async (req, res) => {
 
 export const CreateRecharge = async (req, res) => {
   try {
-    await Recharge.create({
+    await Rechge.create({
       username: req.body.username,
       amount: req.body.amount,
       status: 'Pending',
