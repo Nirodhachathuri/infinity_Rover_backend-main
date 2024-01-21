@@ -273,6 +273,7 @@ export const SetPosition = async (req, res) => {
                 },
               })
                   .then((refUser) => {
+                    console.log("refUser",refUser);
                     if (refUser) {
                       updateUserWithCommission(refUser.id, refUser.balance, 2);
                       return res.status(200).json({ msg: "Update successfull" });
@@ -503,7 +504,7 @@ export const GetIrFamily = async (req, res) => {
 export const GetIrAllowance1 = async (req, res) => {
   //get ref users
   let userList = [];
-  const getRefUsers = async (ref_code) => {
+    const getRefUsers = async (ref_code) => {
     const refUsersArr = await Users.findAll({
       where: {
         ref_code: ref_code,
@@ -524,8 +525,7 @@ export const GetIrAllowance1 = async (req, res) => {
       userList.push(refUsersArr);
     }
     for (let i=0; i<refUsersArr.length; i++) {
-
-      await calculateFactorial(refUsersArr[i].user_code);
+          await calculateFactorial(refUsersArr[i].user_code);
     }
     return userList;
   };
@@ -535,20 +535,106 @@ export const GetIrAllowance1 = async (req, res) => {
       id: req.params.id,
     },
   })
-      .then(async (logedUser) => {
-        if (logedUser) {
+    .then(async (logedUser) => {
+      if (logedUser) {
 
-          const dataList = await calculateFactorial(logedUser.user_code);
-          let flattenedArray = dataList.reduce((acc, sublist) => acc.concat(sublist), []);
-          return res.status(200).json({ data: flattenedArray, msg: "successfull" });
-        } else {
-          return res.status(200).json({ msg: "You have not Introducers" });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        const dataList = await calculateFactorial(logedUser.user_code);
+        let flattenedArray = dataList.reduce((acc, sublist) => acc.concat(sublist), []);
+
+        let data = flattenedArray.map(user => {
+          return user.dataValues;
+        });
+
+        // Print mapedArr data to the terminal
+        data.push({id:logedUser.id,username: logedUser.username,user_code:logedUser.user_code, ref_code:logedUser.ref_code ,position:logedUser.position})
+        // Display the pyramid structure
+        const mainArray = createNestedArray([],data,logedUser.ref_code);
+
+        return res.status(200).json({ data: mainArray, msg: "successfull" });
+
+      } else {
+        return res.status(200).json({ msg: "You have not Introducers" });
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
+// Print the tree in a pyramid structure
+const createNestedArray = (mainArray, dataArray, parentId) => {
+  const result = [];
+
+  console.log("Processing parentId:", parentId);
+
+  for (const dataItem of dataArray) {
+    if (dataItem.ref_code === parentId) {
+      const newItem = {
+        id: dataItem.id,
+        username: dataItem.username,
+        user_code: dataItem.user_code,
+        ref_code: dataItem.ref_code,
+        label: dataItem.username,
+        position: dataItem.position,
+      };
+
+      console.log("Adding newItem:", newItem);
+      const children = createNestedArray(mainArray, dataArray, dataItem.user_code);
+      if (children && children.length > 0) {
+        newItem.children = [];
+
+        const leftChildren = [];
+        const rightChildren = [];
+
+        for (let i = 0; i < children.length; i++) {
+          const child = children[i];
+          if (child.position === 'left' && leftChildren.length < 2) {
+            leftChildren.push(child);
+          } else if (child.position === 'right' && rightChildren.length < 2) {
+            rightChildren.push(child);
+          } 
+        }
+
+        if (leftChildren.length > 0) {
+          newItem.children.push({
+            position: 'left',
+            children: leftChildren,
+          });
+        }
+
+        if (rightChildren.length > 0) {
+          newItem.children.push({
+            position: 'right',
+            children: rightChildren,
+          });
+        }
+      }
+
+      result.push(newItem);
+    }
+  }
+  return result;
+};
+// function printTree(node,level=0){
+//   if (!node) {
+//     return [];  // Return an empty array when the node is undefined
+//   }
+// console.log("node",node)
+//   const result = [{
+//     id: node.id,
+//     username: node.username,
+//     userCode: node.userCode,
+//     refCode: node.refCode,
+//     label: node.label,
+//     position: node.position,
+//     children: printTree(node.children[0], level + 1),
+//   }];
+
+//   if (node.children.length > 1) {
+//     result[0].children.push(...printTree(node.children[1], level + 1));
+//   }
+
+//   return result;
+// }
 
 export const GetIrAllowance = async (req, res) => {
   let logedUserCode = req.params.user_code;
