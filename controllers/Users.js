@@ -659,13 +659,12 @@ export const GetIrAllowance = async (req, res) => {
     if (refUsersArr) {
       const userList = [...refUsersArr];
 
-      // Use Promise.all to fetch the data for all of the referred users
       const userDataPromises = userList.map((user) =>
           fetchUserDataToArray(user.user_code)
       );
       const userData = await Promise.all(userDataPromises);
 
-      // Add the fetched user data to the userList array
+      // Add the fetched user daa to the userList array
       userList.concat(userData);
 
       return userList;
