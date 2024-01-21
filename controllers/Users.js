@@ -27,7 +27,8 @@ export const upload = multer({ storage });
 // ################ IMAGE UPLOAD
 
 dotenv.config();
-const { Op } = Sequelize;
+const { Op,literal } = Sequelize;
+// import { Op, literal } from 'sequelize';
 
 
 //Configure Twillio
@@ -740,6 +741,8 @@ export const ApproveKYCForUser = async (req, res) => {
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
+// import { Op } from 'sequelize';
+
 export const GetNewRegistrations = async (req, res) => {
   try {
     const today = new Date();
@@ -752,12 +755,15 @@ export const GetNewRegistrations = async (req, res) => {
         },
       },
     });
-    return res.status(200).json({ newUsers: users, msg: "successfull" });
+
+    return res.status(200).json({ newUsers: users, msg: "Successful" });
   } catch (error) {
     console.log(error);
     res.status(404).json({ msg: "Operation Failed!" });
   }
 };
+
+
 export const GetAllUsers = async (req, res) => {
   try {
     // retrieve all users

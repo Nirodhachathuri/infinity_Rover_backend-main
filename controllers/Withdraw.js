@@ -133,9 +133,9 @@ export const GetTodayWithdrawalsCount = async (req, res) => {
     today.setHours(0, 0, 0, 0); // Set the time to midnight
 
     // Count the withdrawals with a timestamp for today
-    const count = await Widraw.count({
+    const count = await Widraw.findAll({
       where: {
-        updatedAt: {
+        createdAt: {
           [Op.gte]: today,
         },
       },
