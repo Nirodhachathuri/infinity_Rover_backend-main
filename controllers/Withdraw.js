@@ -104,7 +104,21 @@ export const Withdraw = async (req, res) => {
         }
    }
 }
-
+export const CreateWithdraw = async (req, res) => {
+  try {
+    await Widraw.create({
+      username: req.body.username,
+      amount: req.body.amount,
+      status: 'Pending',
+      // Assuming you store the file path in the database
+      // imagePath: req.file.path,
+    });
+    res.status(200).json({ msg: "Register Success" });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ msg: "Operation Failed!" });
+  }
+};
 export const GetTodayWithdrawalsCount = async (req, res) => {
 
   try {
