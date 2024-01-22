@@ -100,8 +100,9 @@ export const CreateRecharge = async (req, res) => {
   try {
     await Rechge.create({
       username: req.body.username,
+      userId: req.body.userId,
       amount: req.body.amount,
-      status: "Pending",
+      status: false,
       // Assuming you store the file path in the database
       // imagePath: req.file.path,
     });
@@ -152,6 +153,39 @@ export const GetTodayDepositDetails = async (req, res) => {
 export const GetDepositDetails = async (req, res) => {
   try {
     const deposits = await Rechge.findAll({});
+    return res.status(200).json({ deposits: deposits, msg: "successfull" });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ msg: "Operation Failed!" });
+  }
+};
+export const UpdateRecharge = async (req, res) => {
+  try {
+    const deposits = await await Rechge.update(
+      {
+        status:req.body.status
+      },
+      {
+        where: {
+          id: req.body.id,
+        },
+      }
+    );
+    return res.status(200).json({ deposits: deposits, msg: "successfull" });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ msg: "Operation Failed!" });
+  }
+};
+export const GetDepositsById = async (req, res) => {
+  try {
+    const deposits = await Rechge.findAll({
+      where: {
+        userId: {
+          [Op.gte]: req.body.id,
+        },
+      },
+    });
     return res.status(200).json({ deposits: deposits, msg: "successfull" });
   } catch (error) {
     console.log(error);

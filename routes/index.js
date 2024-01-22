@@ -26,7 +26,7 @@ import {
 import {
   GetTodayDepositDetails,
   GetTodayDepositsCount,
-  Recharge,GetDepositDetails
+  Recharge,GetDepositDetails,GetDepositsById,UpdateRecharge
 } from "../controllers/Recharge.js";
 import {
   WithdrawalsHistory,
@@ -104,6 +104,8 @@ router.get("/GetAllByPackages", GetAllByPackages);
 router.post("/CreateWithdraw",CreateWithdraw);
 router.post("/CreateRecharge",CreateRecharge);
 router.get("/GetDepositDetails",GetDepositDetails);
+router.get("/GetDepositsById",GetDepositsById);
 router.get("/GetAllWithdrawal",GetAllWithdrawal);
+router.put("/UpdateRecharge",UpdateRecharge);
 
 export default router;

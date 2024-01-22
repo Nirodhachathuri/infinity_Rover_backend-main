@@ -3,22 +3,28 @@ import db from "../config/Database.js";
 
 const { DataTypes } = Sequelize;
 
-const Rechge = db.define('recharges',{
-    username:{
-        type: DataTypes.STRING
+const Rechge = db.define(
+  "recharges",
+  {
+    username: {
+      type: DataTypes.STRING,
     },
-    hash:{
-        type: DataTypes.STRING
+    hash: {
+      type: DataTypes.STRING,
     },
-    amount:{
-        type: DataTypes.STRING
+    amount: {
+      type: DataTypes.STRING,
     },
-    status:{
-        type: DataTypes.STRING
-    }
-    
-},{
-    freezeTableName:true
-});
+    userId: {
+      type: DataTypes.STRING,
+    },
+    status: {
+      type: DataTypes.BOOLEAN,
+    },
+  },
+  {
+    freezeTableName: true,
+  }
+);
 
 export default Rechge;
