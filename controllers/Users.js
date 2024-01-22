@@ -423,7 +423,7 @@ export const UpdateAllUsersOnceNight = async () => {
     // Check if more than 10 days have passed
     // and .getDay() will retern appropriatly day number of the week if 0 it is sunday if 6  suterday 
     if (daysSinceRegistration > 10 && daysSinceRegistration % 7 !== 0 && daysSinceRegistration <= 300 && currentDate.getDay() !== 0 && currentDate.getDay() !== 6    ) {
-      var newBalance = user.balance * 1.01;
+      var newBalance = user.balance * 0.01;
 
       await Users.update(
           { balance: newBalance },
