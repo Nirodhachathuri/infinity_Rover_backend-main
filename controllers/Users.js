@@ -583,32 +583,42 @@ const createNestedArray = (mainArray, dataArray, parentId) => {
       if (children && children.length > 0) {
         newItem.children = [];
 
-        const leftChildren = [];
-        const rightChildren = [];
-
+        let leftChildren = [];
+        let rightChildren = [];
+        
         for (let i = 0; i < children.length; i++) {
           const child = children[i];
           if (child.position === 'left' && leftChildren.length < 2) {
             leftChildren.push(child);
           } else if (child.position === 'right' && rightChildren.length < 2) {
             rightChildren.push(child);
-          } 
+          }
         }
-
+        
         if (leftChildren.length > 0) {
-          newItem.children.push({
+          const newItemLeft = {
             position: 'left',
             children: leftChildren,
-          });
+          };
+        
+          newItem.children.push(newItemLeft);
         }
-
+        
         if (rightChildren.length > 0) {
-          newItem.children.push({
+          const newItemRight = {
             position: 'right',
             children: rightChildren,
-          });
+          };
+        
+          newItem.children.push(newItemRight);
         }
-      }
+        
+        if (leftChildren.length > 1 && rightChildren.length > 1) {
+          newItem.children[newItem.children.length - 1].children = leftChildren.slice(2).concat(rightChildren.slice(2));
+        }
+
+      
+    }
 
       result.push(newItem);
     }
