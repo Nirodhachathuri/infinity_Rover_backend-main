@@ -63,7 +63,7 @@ const sendOtpToPhoneNumber = async (phoneNumber, otpCode) => {
 
 export const Register = async (req, res) => {
 
-  console.log("handleImageUpload request >> ", req)
+  console.log("handleImageUpload request >> ", req.body)
   // if (!req.files) {
   //   return res.status(400).json({ error: 'No file uploaded.' });
   // }

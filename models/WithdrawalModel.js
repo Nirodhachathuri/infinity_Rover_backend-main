@@ -13,12 +13,13 @@ const Widraw = db.define('withdrawals',{
     amount:{
         type: DataTypes.STRING
     },
-    status:{
-        type: DataTypes.STRING
-    },
-    updatedAt:{
-        type: DataTypes.STRING
-    }
+    userId: {
+        type: DataTypes.STRING,
+      },
+      status: {
+        type: DataTypes.BOOLEAN,
+      },
+  
     
 },{
     freezeTableName:true

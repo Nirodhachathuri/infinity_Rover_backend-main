@@ -117,9 +117,8 @@ export const CreateWithdraw = async (req, res) => {
     await Widraw.create({
       username: req.body.username,
       amount: req.body.amount,
-      status: "Pending",
-      // Assuming you store the file path in the database
-      // imagePath: req.file.path,
+      userId: req.body.userId,
+      status: 0,
     });
     res.status(200).json({ msg: "Register Success" });
   } catch (error) {
