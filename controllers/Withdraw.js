@@ -167,6 +167,21 @@ export const GetTodayWithdrawalDetails = async (req, res) => {
     res.status(404).json({ msg: "Operation Failed!" });
   }
 };
+export const GetAllUserWithdrawal = async (req, res) => {
+  try {
+    const withdrawals = await Widraw.findAll({
+      where: {
+        id: req.body.userId,
+      },
+    });
+    return res
+      .status(200)
+      .json({ withdrawals: withdrawals, msg: "successfull" });
+  } catch (error) {
+    console.log(error);
+    res.status(404).json({ msg: "Operation Failed!" });
+  }
+};
 export const GetAllWithdrawal = async (req, res) => {
   try {
     const withdrawals = await Widraw.findAll({});

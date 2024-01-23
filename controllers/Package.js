@@ -45,10 +45,6 @@ export const BuyPackage = async (req, res) => {
       },
     });
 
-    if (user.wallet < current_package.packageValue) {
-      return res.status(404).json({ msg: "not enough balance!" });
-    }
-
     await Users.update(
       {
         balance: user.balance + (current_package.packageValue * 7) / 100,

@@ -21,7 +21,7 @@ import {
   GetTodayWithdrawalDetails,
   GetTodayWithdrawalsCount,
   GetTotalWithdrawn,GetAllWithdrawal,
-  Withdraw,CreateWithdraw
+  Withdraw,CreateWithdraw,GetAllUserWithdrawal
 } from "../controllers/Withdraw.js";
 import {
   GetTodayDepositDetails,
@@ -107,5 +107,6 @@ router.get("/GetDepositDetails",GetDepositDetails);
 router.get("/GetDepositsById",GetDepositsById);
 router.get("/GetAllWithdrawal",GetAllWithdrawal);
 router.put("/UpdateRecharge",UpdateRecharge);
+router.post("/GetAllUserWithdrawal",GetAllUserWithdrawal);
 
 export default router;
