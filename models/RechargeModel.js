@@ -18,6 +18,9 @@ const Rechge = db.define(
     userId: {
       type: DataTypes.STRING,
     },
+    imagePath: {
+      type: DataTypes.STRING,
+    },
     status: {
       type: DataTypes.BOOLEAN,
     },

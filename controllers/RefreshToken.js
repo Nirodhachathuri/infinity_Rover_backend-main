@@ -32,7 +32,7 @@ export const refreshToken = async (req, res) => {
         const balance = user[0].balance;
         const vip = user[0].vip;
         const daily = user[0].daily;
-        const nic = user[0].nic;
+        const nic = user[0].nicNo;
         const email = user[0].email;
         const wallet = user[0].wallet;
         const createdAt = user[0].createdAt;

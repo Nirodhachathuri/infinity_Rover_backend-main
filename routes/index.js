@@ -1,7 +1,6 @@
 import express from "express";
 
 import {
-  upload,
   Register,
   Login,
   Logout,
@@ -65,7 +64,7 @@ router.post("/levelOne", levelOne);
 router.post("/levelTwo", levelTwo);
 router.post("/levelPremium", levelPremium);
 router.post("/address", SetAddress);
-router.post("/register", upload.array("images", 5), Register);
+router.post("/register", Register);
 router.post("/login", Login);
 router.post("/withdraw", Withdraw);
 router.post("/recharge", Recharge);

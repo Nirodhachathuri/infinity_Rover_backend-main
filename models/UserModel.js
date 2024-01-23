@@ -63,6 +63,7 @@ const Users = db.define(
     wallet: {
       type: DataTypes.STRING,
     },
+   
     kycApproved: {
       type: DataTypes.BOOLEAN,
     },
@@ -71,7 +72,7 @@ const Users = db.define(
     },
     isAssigned: {
       type: DataTypes.BOOLEAN,
-    }
+    },
   },
   {
     freezeTableName: true,

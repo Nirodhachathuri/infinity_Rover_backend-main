@@ -8,6 +8,7 @@ import reloadApp from "./controllers/ReloadApp.js";
 import router from "./routes/index.js";
 import cron from "node-cron";
 import { UpdateAllUsersOnceNight } from "./controllers/Users.js";
+import path from 'path';
 
 dotenv.config();
 
@@ -17,6 +18,9 @@ const load = ora({
 }).start();
 
 const app = express();
+global.__basedir = new URL('.', import.meta.url).pathname;
+
+app.use(express.static(path.join(__basedir, 'uploads')));
 
 try {
   await db.authenticate();

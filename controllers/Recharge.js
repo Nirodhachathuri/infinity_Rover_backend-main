@@ -4,6 +4,8 @@ import Users from "../models/UserModel.js";
 import Rechge from "../models/RechargeModel.js";
 import History from "../models/HistoryModel.js";
 import { Sequelize } from "sequelize";
+import upload from '../middleware/imageUpload.js'; // Import the image upload middleware
+import multer from 'multer';
 
 const { Op } = Sequelize;
 
@@ -96,22 +98,55 @@ export const Recharge = async (req, res) => {
   }
 };
 
+// export const CreateRecharge = async (req, res) => {
+//   try {
+//     await Rechge.create({
+//       username: req.body.username,
+//       userId: req.body.userId,
+//       amount: req.body.amount,
+//       status: false,
+//       // Assuming you store the file path in the database
+//       // imagePath: req.file.path,
+//     });
+//     res.status(200).json({ msg: "Register Success" });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(404).json({ msg: "Operation Failed!" });
+//   }
+// };
 export const CreateRecharge = async (req, res) => {
+  console.log("🚀 ~ CreateRecharge ~ req:", req.body)
   try {
-    await Rechge.create({
-      username: req.body.username,
-      userId: req.body.userId,
-      amount: req.body.amount,
-      status: false,
-      // Assuming you store the file path in the database
-      // imagePath: req.file.path,
+    // Use the `upload.single` middleware to handle the image upload
+    upload.single('image')(req, res, async function (err) {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ msg: 'File upload error' });
+      } else if (err) {
+        return res.status(500).json({ msg: 'Server error' });
+      }
+
+      // File has been successfully uploaded at this point
+      try {
+        await Rechge.create({
+          username: req.body.username,
+          userId: req.body.userId,
+          amount: req.body.amount,
+          status: false,
+          imagePath: req.file ? req.file.path : null,
+        });
+
+        res.status(200).json({ msg: 'Register Success' });
+      } catch (error) {
+        console.log(error);
+        res.status(404).json({ msg: 'Operation Failed!' });
+      }
     });
-    res.status(200).json({ msg: "Register Success" });
   } catch (error) {
     console.log(error);
-    res.status(404).json({ msg: "Operation Failed!" });
+    res.status(500).json({ msg: 'Server error' });
   }
 };
+
 export const GetTodayDepositsCount = async (req, res) => {
   try {
     const today = new Date();
